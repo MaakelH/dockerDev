@@ -20,4 +20,4 @@ services:
 
     user: $PUID
     volumes:
-    - $DOCKERDIR/develop/appdata/grafana:/var/lib/grafana:rw
+    - $DOCKERDIR/develop/appdata/grafana:/var/lib/grafana
