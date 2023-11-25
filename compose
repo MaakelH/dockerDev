@@ -1,0 +1,23 @@
+########################### NETWORKS #################################
+networks:
+  default: 
+    driver: bridge
+######################################################################
+
+services:
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafanaDev
+    security_opt:
+    - no-new-privileges:true
+    restart: unless-stopped
+    networks:
+    - default
+    ports:
+    - "3009:3000"
+    environment:
+    - GF_USERS_DEFAULT_THEME=light
+
+    user: $PUID
+    volumes:
+    - $DOCKERDIR/develop/appdata/grafana:/var/lib/grafana:rw
