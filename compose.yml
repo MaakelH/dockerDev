@@ -7,17 +7,17 @@ networks:
 services:
   grafana:
     image: grafana/grafana:latest
-    container_name: grafanaDev
+    container_name: grafanatest
     security_opt:
     - no-new-privileges:true
     restart: unless-stopped
     networks:
     - default
     ports:
-    - "3009:3000"
+    - "3015:3000"
     environment:
     - GF_USERS_DEFAULT_THEME=light
 
     user: $PUID
     volumes:
-    - $DOCKERDIR/develop/appdata/grafana:/var/lib/grafana
+    - $DOCKERDIR/developgit/appdata/grafana:/var/lib/grafana
