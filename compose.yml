@@ -1,3 +1,5 @@
+version: '3.8'
+
 ########################### NETWORKS #################################
 networks:
   default: 
@@ -6,18 +8,88 @@ networks:
 
 services:
   grafana:
-    image: grafana/grafana:latest
-    container_name: grafanatest
+    container_name: ${GF_NAME:-grafana}
+    image: grafana/grafana:${TAG:-latest}
+    user: ${PUID}
     security_opt:
     - no-new-privileges:true
-    restart: unless-stopped
-    networks:
-    - default
     ports:
-    - "3015:3000"
-    environment:
-    - GF_USERS_DEFAULT_THEME=light
-
-    user: $PUID
+    - "${GRAFANA_PORT:-3000}:3000"
+    restart: unless-stopped
     volumes:
-    - $DOCKERDIR/appdata/grafana:/var/lib/grafana
+    - ${DOCKERDIR}/appdata/grafana:/var/lib/grafana
+
+  influxdb:
+    container_name: ${INFLUX_NAME:-influx}
+    image: influxdb:${TAG:-latest}
+    user: ${PUID}
+    security_opt:
+    - no-new-privileges:true
+    ports:
+    - "${INFLUXDB_PORT:-8086}:8086"
+    restart: unless-stopped
+    environment:
+    - INFLUXDB_ADMIN_USER=${INFLUXDB_ADMIN_USER}
+    - INFLUXDB_ADMIN_PASSWORD=${INFLUXDB_ADMIN_PASSWORD}
+    volumes:
+    
+    - ${DOCKERDIR}/appdata/influxdb2/data/engine:/var/lib/influxdb2/engine
+    - ${DOCKERDIR}/appdata/influxdb2/data:/var/lib/influxdb2
+    - ${DOCKERDIR}/appdata/influxdb2/etc:/etc/influxdb2
+
+  mosquitto:
+    container_name: ${MOSQUITTO_NAME:-mosquitto}
+    image: eclipse-mosquitto:${TAG:-latest}
+    user: ${PUID}
+    security_opt:
+    - no-new-privileges:true
+    ports:
+    - "${MOSQUITTO_PORT:-1883}:1883"
+    restart: unless-stopped
+    volumes:
+    - ${DOCKERDIR}/appdata/mosquitto:/mosquitto/*
+    
+  postgres:
+    container_name: ${POSTGRES_NAME:-postgres}
+    image: postgres:${TAG:-latest}
+    user: ${PUID}
+    security_opt:
+    - no-new-privileges:true
+    ports:
+    - "${POSTGRES_PORT:-5432}:5432"
+    restart: unless-stopped
+    environment:
+    - POSTGRES_USER=${POSTGRES_USER}
+    - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+    - ${DOCKERDIR}/appdata/postgres:/var/lib/postgresql/data
+    
+  pgadmin:
+    container_name: ${PGADMIN_NAME:-pgAdmin}
+    image: dpage/pgadmin4:${TAG:-latest}
+    user: ${PUID}
+    security_opt:
+    - no-new-privileges:true
+    ports:
+    - "${PGADMIN_PORT:-5050}:5050"
+    restart: unless-stopped  
+    environment:
+    - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+    - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+
+  nodered:
+    container_name: ${NODERED_NAME:-nodered}
+    image: nodered/node-red:${TAG:-latest}
+    user: ${PUID}
+    security_opt:
+    - no-new-privileges:true
+    ports:
+    - ${NODERED_PORT:-1880}:1880
+    restart: unless-stopped
+    volumes:
+    - ${DOCKERDIR}/appdata/nodered/data:/data/*
+   
+
+
+    
+    
